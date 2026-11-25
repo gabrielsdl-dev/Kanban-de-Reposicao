@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Modo escuro: mesma identidade visual, fundo escuro e textos claros -->
+    <style name="Theme.Kanban" parent="Theme.Material3.Dark.NoActionBar">
+        <item name="colorPrimary">@color/azul_claro_noite</item>
+        <item name="colorOnPrimary">@color/azul_industrial</item>
+        <item name="colorPrimaryContainer">@color/azul_claro</item>
+        <item name="colorOnPrimaryContainer">@color/branco</item>
+        <item name="colorPrimaryVariant">@color/azul_claro</item>
+
+        <item name="colorSecondary">@color/amarelo_seguranca</item>
+        <item name="colorOnSecondary">@color/preto_texto</item>
+        <item name="colorSecondaryContainer">@color/amarelo_seguranca</item>
+        <item name="colorOnSecondaryContainer">@color/preto_texto</item>
+
+        <item name="colorTertiary">@color/azul_claro_noite</item>
+        <item name="colorError">#EF9A9A</item>
+
+        <item name="android:colorBackground">@color/escuro_fundo</item>
+        <item name="colorSurface">@color/escuro_superficie</item>
+        <item name="colorOnSurface">@color/escuro_texto</item>
+        <item name="colorOnSurfaceVariant">@color/escuro_texto_secundario</item>
+        <item name="colorOutline">@color/cinza_texto</item>
+
+        <item name="android:statusBarColor">@color/azul_industrial</item>
+        <item name="android:windowLightStatusBar">false</item>
+
+        <item name="floatingActionButtonStyle">@style/Widget.Kanban.FAB</item>
+        <item name="extendedFloatingActionButtonStyle">@style/Widget.Kanban.ExtendedFAB</item>
+        <item name="materialCardViewStyle">@style/Widget.Kanban.Card</item>
+    </style>
+</resources>

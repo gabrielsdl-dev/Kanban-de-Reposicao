@@ -1,0 +1,22 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "cartoes",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "status", "order": "ASCENDING" },
+        { "fieldPath": "urgencia", "order": "DESCENDING" },
+        { "fieldPath": "abertoEm", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "cartoes",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "postoId", "order": "ASCENDING" },
+        { "fieldPath": "abertoEm", "order": "ASCENDING" }
+      ]
+    }
+  ],
+  "fieldOverrides": []
+}

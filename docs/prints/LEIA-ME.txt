@@ -1,0 +1,1 @@
+Coloque aqui os prints das telas (login.png, quadro.png, novo_cartao.png, operador.png, postos.png).

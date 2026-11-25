@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- C4 / C6: cartão no quadro da logística.
+     Botão de ação: "Saiu para entrega" (Aberto) / "Marcar entregue" (Em rota) / oculto em Entregue,
+     que mostra "Aguardando confirmação". -->
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/cardCartao"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="@dimen/margem_pequena"
+    android:layout_marginVertical="@dimen/margem_minima">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <!-- Barra lateral colorida pela urgência -->
+        <View
+            android:id="@+id/barraUrgencia"
+            android:layout_width="@dimen/barra_urgencia_largura"
+            android:layout_height="match_parent"
+            android:background="@drawable/barra_urgencia_critica"
+            android:contentDescription="@string/cd_urgencia" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:padding="@dimen/margem_padrao">
+
+            <TextView
+                android:id="@+id/txtPosto"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:drawablePadding="@dimen/margem_minima"
+                android:gravity="center_vertical"
+                android:textAllCaps="true"
+                android:textAppearance="?attr/textAppearanceLabelLarge"
+                android:textColor="?attr/colorOnSurfaceVariant"
+                app:drawableStartCompat="@drawable/ic_fabrica"
+                app:drawableTint="?attr/colorOnSurfaceVariant"
+                tools:text="Montagem 3" />
+
+            <TextView
+                android:id="@+id/txtInsumo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margem_minima"
+                android:textAppearance="?attr/textAppearanceTitleLarge"
+                android:textColor="?attr/colorOnSurface"
+                tools:text="Parafuso sextavado M8" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margem_pequena"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/chipUrgencia"
+                    style="@style/Widget.Kanban.Chip"
+                    tools:background="@drawable/bg_chip_urgencia_critica"
+                    tools:text="Crítica" />
+
+                <Space
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_weight="1" />
+
+                <!-- "há X min" em destaque (C6) -->
+                <TextView
+                    android:id="@+id/txtTempo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:drawablePadding="@dimen/margem_minima"
+                    android:gravity="center_vertical"
+                    android:textColor="?attr/colorOnSurface"
+                    android:textSize="@dimen/texto_tempo"
+                    android:textStyle="bold"
+                    app:drawableStartCompat="@drawable/ic_relogio"
+                    app:drawableTint="?attr/colorOnSurface"
+                    tools:text="há 12 min" />
+            </LinearLayout>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnAcao"
+                style="@style/Widget.Kanban.Botao"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margem_padrao"
+                app:icon="@drawable/ic_caminhao"
+                tools:text="@string/btn_saiu_entrega" />
+
+            <TextView
+                android:id="@+id/txtAguardando"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margem_padrao"
+                android:drawablePadding="@dimen/margem_pequena"
+                android:gravity="center_vertical"
+                android:text="@string/aguardando_confirmacao"
+                android:textColor="@color/verde_ok"
+                android:textSize="@dimen/texto_corpo"
+                android:textStyle="bold"
+                android:visibility="gone"
+                app:drawableStartCompat="@drawable/ic_relogio"
+                app:drawableTint="@color/verde_ok" />
+        </LinearLayout>
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>

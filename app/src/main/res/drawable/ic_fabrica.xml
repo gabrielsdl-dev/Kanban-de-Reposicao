@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Material Icons (Apache 2.0) -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:tint="?attr/colorControlNormal"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <path
+        android:fillColor="@android:color/white"
+        android:pathData="M2,21V10l6,-3v3l6,-3v3h2l1,-7h3l1,7v11H2zM5,18h3v-3H5v3zM10.5,18h3v-3h-3v3zM16,18h3v-3h-3v3z" />
+</vector>

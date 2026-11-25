@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Tema principal: Material 3 com a paleta industrial (nada do roxo padrão) -->
+    <style name="Theme.Kanban" parent="Theme.Material3.Light.NoActionBar">
+        <item name="colorPrimary">@color/azul_industrial</item>
+        <item name="colorOnPrimary">@color/branco</item>
+        <item name="colorPrimaryContainer">@color/azul_container</item>
+        <item name="colorOnPrimaryContainer">@color/azul_industrial</item>
+        <item name="colorPrimaryVariant">@color/azul_claro</item>
+
+        <item name="colorSecondary">@color/amarelo_seguranca</item>
+        <item name="colorOnSecondary">@color/preto_texto</item>
+        <item name="colorSecondaryContainer">@color/amarelo_container</item>
+        <item name="colorOnSecondaryContainer">@color/preto_texto</item>
+
+        <item name="colorTertiary">@color/azul_claro</item>
+        <item name="colorError">@color/vermelho_alerta</item>
+
+        <item name="android:colorBackground">@color/cinza_fundo</item>
+        <item name="colorSurface">@color/branco</item>
+        <item name="colorOnSurface">@color/preto_texto</item>
+        <item name="colorOnSurfaceVariant">@color/cinza_texto</item>
+        <item name="colorOutline">@color/cinza_borda</item>
+
+        <item name="android:statusBarColor">@color/azul_industrial</item>
+        <item name="android:windowLightStatusBar">false</item>
+
+        <item name="floatingActionButtonStyle">@style/Widget.Kanban.FAB</item>
+        <item name="extendedFloatingActionButtonStyle">@style/Widget.Kanban.ExtendedFAB</item>
+        <item name="materialCardViewStyle">@style/Widget.Kanban.Card</item>
+    </style>
+
+    <!-- Splash: sem toolbar, fundo azul -->
+    <style name="Theme.Kanban.Splash" parent="Theme.Kanban">
+        <item name="android:windowBackground">@color/azul_industrial</item>
+    </style>
+
+    <!-- Toolbar azul com título e ícones brancos (usada em todas as telas) -->
+    <style name="Widget.Kanban.Toolbar" parent="Widget.Material3.Toolbar">
+        <item name="android:background">@color/azul_industrial</item>
+        <item name="titleTextColor">@color/branco</item>
+        <item name="subtitleTextColor">@color/azul_container</item>
+        <item name="navigationIconTint">@color/branco</item>
+        <item name="android:theme">@style/ThemeOverlay.Kanban.Toolbar</item>
+    </style>
+
+    <style name="ThemeOverlay.Kanban.Toolbar" parent="ThemeOverlay.Material3.Dark.ActionBar">
+        <item name="colorControlNormal">@color/branco</item>
+        <item name="android:textColorPrimary">@color/branco</item>
+    </style>
+
+    <style name="Widget.Kanban.FAB" parent="Widget.Material3.FloatingActionButton.Primary">
+        <item name="backgroundTint">@color/amarelo_seguranca</item>
+        <item name="tint">@color/preto_texto</item>
+    </style>
+
+    <style name="Widget.Kanban.ExtendedFAB" parent="Widget.Material3.ExtendedFloatingActionButton.Icon.Primary">
+        <item name="backgroundTint">@color/amarelo_seguranca</item>
+        <item name="android:textColor">@color/preto_texto</item>
+        <item name="iconTint">@color/preto_texto</item>
+    </style>
+
+    <style name="Widget.Kanban.Card" parent="Widget.Material3.CardView.Elevated">
+        <item name="cardCornerRadius">@dimen/card_raio</item>
+        <item name="cardElevation">@dimen/card_elevacao</item>
+        <item name="cardBackgroundColor">?attr/colorSurface</item>
+    </style>
+
+    <!-- Botão principal (preenchido, azul) -->
+    <style name="Widget.Kanban.Botao" parent="Widget.Material3.Button.Icon">
+        <item name="android:minHeight">@dimen/botao_altura</item>
+        <item name="android:textSize">@dimen/texto_corpo</item>
+    </style>
+
+    <!-- Botão de confirmação (verde) -->
+    <style name="Widget.Kanban.Botao.Confirmar">
+        <item name="backgroundTint">@color/verde_ok</item>
+        <item name="android:textColor">@color/branco</item>
+        <item name="iconTint">@color/branco</item>
+    </style>
+
+    <!-- "Chip" informativo (urgência e status). O fundo (bg_chip_*) e a cor do texto
+         são trocados pelo Adapter conforme a urgência/status do cartão. -->
+    <style name="Widget.Kanban.Chip" parent="">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:minHeight">28dp</item>
+        <item name="android:gravity">center</item>
+        <item name="android:paddingStart">12dp</item>
+        <item name="android:paddingEnd">12dp</item>
+        <item name="android:paddingTop">4dp</item>
+        <item name="android:paddingBottom">4dp</item>
+        <item name="android:textSize">@dimen/texto_secundario</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textColor">@color/branco</item>
+        <item name="android:background">@drawable/bg_chip_urgencia_normal</item>
+    </style>
+
+    <!-- Rótulo de seção nos formulários -->
+    <style name="Widget.Kanban.RotuloSecao" parent="">
+        <item name="android:textAppearance">?attr/textAppearanceTitleSmall</item>
+        <item name="android:textColor">?attr/colorOnSurfaceVariant</item>
+    </style>
+</resources>

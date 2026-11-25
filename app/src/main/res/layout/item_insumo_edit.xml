@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- C1: insumo dentro do formulário de posto, com botão de remover. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:gravity="center_vertical"
+    android:minHeight="56dp"
+    android:orientation="horizontal"
+    android:paddingStart="@dimen/margem_padrao"
+    android:paddingEnd="@dimen/margem_minima">
+
+    <ImageView
+        android:layout_width="@dimen/icone_pequeno"
+        android:layout_height="@dimen/icone_pequeno"
+        android:contentDescription="@string/cd_icone_insumo"
+        android:src="@drawable/ic_caixa"
+        app:tint="?attr/colorPrimary" />
+
+    <TextView
+        android:id="@+id/txtNomeInsumo"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/margem_padrao"
+        android:layout_weight="1"
+        android:textAppearance="?attr/textAppearanceBodyLarge"
+        android:textColor="?attr/colorOnSurface"
+        tools:text="Parafuso sextavado M8" />
+
+    <ImageButton
+        android:id="@+id/btnRemoverInsumo"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:contentDescription="@string/cd_remover_insumo"
+        android:src="@drawable/ic_remover"
+        app:tint="@color/vermelho_alerta" />
+</LinearLayout>

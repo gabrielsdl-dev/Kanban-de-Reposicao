@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- C4 / NC2: quadro da logística no estilo Trello.
+     As 3 colunas (Aberto / Em rota / Entregue) ficam lado a lado e o quadro rola na horizontal.
+     Cada coluna tem um cabeçalho (título + contador) e um ColunaFragment com a lista de cartões,
+     que rola na vertical. Em telas largas (tablet / paisagem) as 3 colunas aparecem juntas. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/raiz"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?android:attr/colorBackground"
+    android:orientation="vertical">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/azul_industrial">
+
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbar"
+            style="@style/Widget.Kanban.Toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:theme="@style/ThemeOverlay.Kanban.Toolbar"
+            app:title="@string/quadro_titulo" />
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <HorizontalScrollView
+        android:id="@+id/scrollQuadro"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:clipToPadding="false"
+        android:fillViewport="true"
+        android:paddingHorizontal="@dimen/margem_pequena"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:paddingVertical="@dimen/margem_padrao">
+
+            <!-- ===== Coluna ABERTO ===== -->
+            <androidx.fragment.app.FragmentContainerView
+                android:id="@+id/containerAberto"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1" />
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="@dimen/coluna_largura"
+                android:layout_height="match_parent"
+                android:layout_marginHorizontal="@dimen/margem_pequena"
+                app:cardBackgroundColor="@color/cinza_coluna"
+                app:cardElevation="0dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+
+                    <include
+                        android:id="@+id/cabecalhoAberto"
+                        layout="@layout/layout_cabecalho_coluna" />
+
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- ===== Coluna EM ROTA ===== -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="@dimen/coluna_largura"
+                android:layout_height="match_parent"
+                android:layout_marginHorizontal="@dimen/margem_pequena"
+                app:cardBackgroundColor="@color/cinza_coluna"
+                app:cardElevation="0dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+
+                    <include
+                        android:id="@+id/cabecalhoEmRota"
+                        layout="@layout/layout_cabecalho_coluna" />
+
+                    <androidx.fragment.app.FragmentContainerView
+                        android:id="@+id/containerEmRota"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="1" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- ===== Coluna ENTREGUE ===== -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="@dimen/coluna_largura"
+                android:layout_height="match_parent"
+                android:layout_marginHorizontal="@dimen/margem_pequena"
+                app:cardBackgroundColor="@color/cinza_coluna"
+                app:cardElevation="0dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+
+                    <include
+                        android:id="@+id/cabecalhoEntregue"
+                        layout="@layout/layout_cabecalho_coluna" />
+
+                    <androidx.fragment.app.FragmentContainerView
+                        android:id="@+id/containerEntregue"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="1" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+        </LinearLayout>
+    </HorizontalScrollView>
+</LinearLayout>

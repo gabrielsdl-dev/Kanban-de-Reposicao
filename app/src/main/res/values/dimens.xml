@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="margem_padrao">16dp</dimen>
+    <dimen name="margem_pequena">8dp</dimen>
+    <dimen name="margem_minima">4dp</dimen>
+    <dimen name="margem_grande">24dp</dimen>
+    <dimen name="margem_fab_lista">88dp</dimen>
+
+    <dimen name="card_raio">12dp</dimen>
+    <dimen name="card_elevacao">2dp</dimen>
+    <dimen name="barra_urgencia_largura">8dp</dimen>
+    <!-- Largura de cada coluna do quadro (estilo Trello). Menor que a tela para a próxima coluna "espiar". -->
+    <dimen name="coluna_largura">288dp</dimen>
+
+    <dimen name="icone_pequeno">20dp</dimen>
+    <dimen name="icone_item">40dp</dimen>
+    <dimen name="icone_estado_vazio">96dp</dimen>
+    <dimen name="logo_splash">120dp</dimen>
+    <dimen name="botao_altura">56dp</dimen>
+
+    <dimen name="texto_titulo">22sp</dimen>
+    <dimen name="texto_subtitulo">18sp</dimen>
+    <dimen name="texto_corpo">16sp</dimen>
+    <dimen name="texto_secundario">14sp</dimen>
+    <dimen name="texto_tempo">20sp</dimen>
+    <dimen name="texto_splash">28sp</dimen>
+</resources>

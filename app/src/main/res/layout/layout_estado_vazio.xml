@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- NC5: estado vazio reutilizável. Incluído com <include android:id="@+id/estadoVazio" ... />.
+     A tela troca os textos (txtEstadoVazio / txtEstadoVazioDica) e alterna a visibilidade de getRoot(). -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:padding="@dimen/margem_grande"
+    android:visibility="gone"
+    tools:visibility="visible">
+
+    <ImageView
+        android:id="@+id/imgEstadoVazio"
+        android:layout_width="@dimen/icone_estado_vazio"
+        android:layout_height="@dimen/icone_estado_vazio"
+        android:contentDescription="@string/cd_estado_vazio"
+        android:src="@drawable/ic_caixa"
+        app:tint="@color/cinza_icone" />
+
+    <TextView
+        android:id="@+id/txtEstadoVazio"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margem_padrao"
+        android:gravity="center"
+        android:textAppearance="?attr/textAppearanceTitleMedium"
+        android:textColor="?attr/colorOnSurface"
+        tools:text="@string/coluna_vazia" />
+
+    <TextView
+        android:id="@+id/txtEstadoVazioDica"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margem_pequena"
+        android:gravity="center"
+        android:textAppearance="?attr/textAppearanceBodyMedium"
+        android:textColor="?attr/colorOnSurfaceVariant"
+        tools:text="@string/coluna_vazia_dica" />
+</LinearLayout>

@@ -1,0 +1,62 @@
+rules_version = '2';
+
+// Regras do Kanban de Reposição (NC3).
+// Perfis em usuarios/{uid}.perfil: "operador" ou "logistica" (definidos SOMENTE pelo console, NC4).
+// Publicar: Console do Firebase > Firestore Database > Regras (colar e Publicar),
+// ou pela CLI: firebase deploy --only firestore:rules
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function logado() { return request.auth != null; }
+    function eu() { return get(/databases/$(database)/documents/usuarios/$(request.auth.uid)).data; }
+    function muda(de, para) {
+      return resource.data.status == de && request.resource.data.status == para;
+    }
+
+    // NC4: cada um lê só o próprio perfil; ninguém escreve pelo app.
+    match /usuarios/{uid} {
+      allow read:  if logado() && request.auth.uid == uid;
+      allow write: if false;                       // perfil só pelo console (NC4)
+    }
+
+    // C1: todos leem; só a logística cadastra/edita postos e insumos.
+    match /postos/{id} {
+      allow read:  if logado();
+      allow write: if logado() && eu().perfil == 'logistica';
+    }
+
+    match /cartoes/{id} {
+      allow read: if logado();
+
+      // C2 + C3: operador abre cartão do PRÓPRIO posto, sempre "aberto",
+      // com id = postoId_insumoId (garante 1 cartão por insumo/posto).
+      allow create: if logado() && eu().perfil == 'operador'
+                    && request.resource.data.postoId == eu().postoId
+                    && request.resource.data.status == 'aberto'
+                    && id == request.resource.data.postoId + '_' + request.resource.data.insumoId
+                    // [acréscimo] quem abriu é quem está logado e a urgência é 1, 2 ou 3
+                    && request.resource.data.abertoPor == request.auth.uid
+                    && request.resource.data.urgencia in [1, 2, 3];
+
+      // C4: só a logística move, e só para a próxima coluna.
+      allow update: if logado() && eu().perfil == 'logistica'
+                    && (muda('aberto', 'em_rota') || muda('em_rota', 'entregue'))
+                    // [acréscimo] só pode alterar o status e os horários das etapas
+                    && request.resource.data.diff(resource.data).affectedKeys()
+                         .hasOnly(['status', 'emRotaEm', 'entregueEm']);
+
+      // C5: operador do posto apaga o cartão entregue (junto com o create em historico, no mesmo batch).
+      allow delete: if logado() && eu().perfil == 'operador'
+                    && resource.data.postoId == eu().postoId
+                    && resource.data.status == 'entregue';
+    }
+
+    // C5 / C6: histórico dos pedidos concluídos.
+    match /historico/{id} {
+      allow read:   if logado();
+      allow create: if logado() && eu().perfil == 'operador'
+                    // [acréscimo] só grava histórico do próprio posto
+                    && request.resource.data.postoId == eu().postoId;
+    }
+  }
+}

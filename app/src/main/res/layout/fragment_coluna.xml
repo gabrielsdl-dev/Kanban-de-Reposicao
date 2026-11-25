@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- C4 / C6 / NC5: uma coluna do quadro (o mesmo fragment serve para as 3 colunas). -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvCartoes"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:clipToPadding="false"
+        android:paddingTop="@dimen/margem_minima"
+        android:paddingBottom="@dimen/margem_pequena"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        tools:listitem="@layout/item_cartao_quadro" />
+
+    <include
+        android:id="@+id/estadoVazio"
+        layout="@layout/layout_estado_vazio"
+        tools:visibility="gone" />
+</FrameLayout>

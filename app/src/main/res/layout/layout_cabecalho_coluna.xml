@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- C4: cabeçalho de uma coluna do quadro (título + contador de cartões).
+     Incluído 3 vezes no activity_quadro.xml. A faixa colorida identifica a coluna. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <View
+        android:id="@+id/faixaColuna"
+        android:layout_width="match_parent"
+        android:layout_height="6dp"
+        android:background="@drawable/faixa_coluna_aberto" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingHorizontal="@dimen/margem_padrao"
+        android:paddingVertical="12dp">
+
+        <TextView
+            android:id="@+id/txtTituloColuna"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textAppearance="?attr/textAppearanceTitleMedium"
+            android:textColor="?attr/colorOnSurface"
+            android:textStyle="bold"
+            tools:text="@string/status_aberto" />
+
+        <!-- Quantidade de cartões na coluna (preenchida pela QuadroActivity) -->
+        <TextView
+            android:id="@+id/txtContador"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_contador_coluna"
+            android:gravity="center"
+            android:minWidth="28dp"
+            android:paddingHorizontal="8dp"
+            android:paddingVertical="2dp"
+            android:text="@string/contador_zero"
+            android:textColor="@color/branco"
+            android:textSize="@dimen/texto_secundario"
+            android:textStyle="bold" />
+    </LinearLayout>
+</LinearLayout>

@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Telas largas (paisagem / tablet): colunas mais largas -->
+    <dimen name="coluna_largura">320dp</dimen>
+</resources>

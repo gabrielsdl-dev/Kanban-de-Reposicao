@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- C2 / C3 / NC6 / NC7: operador abre um cartão escolhendo insumo e urgência.
+     O insumo escolhido e a urgência ficam no OperadorViewModel para sobreviver à rotação. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/raiz"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?android:attr/colorBackground"
+    android:orientation="vertical">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/azul_industrial">
+
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbar"
+            style="@style/Widget.Kanban.Toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:theme="@style/ThemeOverlay.Kanban.Toolbar"
+            app:title="@string/novo_cartao_titulo" />
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <ScrollView
+        android:id="@+id/scroll"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="@dimen/margem_padrao">
+
+            <TextView
+                android:id="@+id/txtInstrucao"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/novo_cartao_instrucao"
+                android:textAppearance="?attr/textAppearanceBodyLarge"
+                android:textColor="?attr/colorOnSurface" />
+
+            <!-- Posto do operador (somente leitura) -->
+            <TextView
+                android:id="@+id/txtPosto"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margem_padrao"
+                android:drawablePadding="@dimen/margem_pequena"
+                android:gravity="center_vertical"
+                android:text="@string/carregando"
+                android:textAppearance="?attr/textAppearanceTitleMedium"
+                android:textColor="?attr/colorPrimary"
+                app:drawableStartCompat="@drawable/ic_fabrica"
+                app:drawableTint="?attr/colorPrimary" />
+
+            <!-- Exposed dropdown com os insumos do posto -->
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilInsumo"
+                style="@style/Widget.Material3.TextInputLayout.OutlinedBox.ExposedDropdownMenu"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margem_padrao"
+                android:hint="@string/hint_insumo"
+                app:startIconDrawable="@drawable/ic_caixa">
+
+                <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                    android:id="@+id/actvInsumo"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="none" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <TextView
+                style="@style/Widget.Kanban.RotuloSecao"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margem_grande"
+                android:text="@string/label_urgencia" />
+
+            <com.google.android.material.button.MaterialButtonToggleGroup
+                android:id="@+id/toggleUrgencia"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margem_pequena"
+                app:selectionRequired="true"
+                app:singleSelection="true">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnUrgenciaNormal"
+                    style="@style/Widget.Material3.Button.OutlinedButton"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:minHeight="@dimen/botao_altura"
+                    android:text="@string/urgencia_normal" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnUrgenciaAlta"
+                    style="@style/Widget.Material3.Button.OutlinedButton"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:minHeight="@dimen/botao_altura"
+                    android:text="@string/urgencia_alta" />
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnUrgenciaCritica"
+                    style="@style/Widget.Material3.Button.OutlinedButton"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:minHeight="@dimen/botao_altura"
+                    android:text="@string/urgencia_critica" />
+            </com.google.android.material.button.MaterialButtonToggleGroup>
+
+            <!-- Erro "Escolha a urgência" (NC6) -->
+            <TextView
+                android:id="@+id/txtErroUrgencia"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margem_minima"
+                android:text="@string/erro_escolha_urgencia"
+                android:textColor="?attr/colorError"
+                android:textSize="@dimen/texto_secundario"
+                android:visibility="gone" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnAbrirPedido"
+                style="@style/Widget.Kanban.Botao"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/margem_grande"
+                android:text="@string/btn_abrir_pedido"
+                app:icon="@drawable/ic_enviar" />
+
+            <ProgressBar
+                android:id="@+id/progresso"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="@dimen/margem_padrao"
+                android:visibility="gone" />
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

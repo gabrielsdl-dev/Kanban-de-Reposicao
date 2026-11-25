@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Geral -->
+    <string name="app_name">Kanban de Reposição</string>
+    <string name="app_slogan">TechInova · Chão de fábrica</string>
+    <string name="menu_sair">Sair</string>
+    <string name="menu_postos">Postos</string>
+    <string name="carregando">Carregando…</string>
+    <string name="sim">Sim</string>
+    <string name="cancelar">Cancelar</string>
+    <string name="dialogo_sair_titulo">Sair da conta</string>
+    <string name="dialogo_sair_mensagem">Deseja mesmo sair? Você vai precisar entrar de novo.</string>
+
+    <!-- Descrições de acessibilidade -->
+    <string name="cd_logo">Logotipo do Kanban de Reposição</string>
+    <string name="cd_estado_vazio">Ilustração de lista vazia</string>
+    <string name="cd_icone_posto">Ícone de posto de trabalho</string>
+    <string name="cd_icone_insumo">Ícone de insumo</string>
+    <string name="cd_remover_insumo">Remover insumo</string>
+    <string name="cd_novo_posto">Cadastrar novo posto</string>
+    <string name="cd_urgencia">Indicador de urgência</string>
+
+    <!-- Login (NC1) -->
+    <string name="login_titulo">Entrar</string>
+    <string name="login_boas_vindas">Bem-vindo de volta</string>
+    <string name="login_instrucao">Entre com o e-mail e a senha cadastrados.</string>
+    <string name="hint_email">E-mail</string>
+    <string name="hint_senha">Senha</string>
+    <string name="btn_entrar">Entrar</string>
+    <string name="link_criar_conta">Não tem conta? Criar conta</string>
+
+    <!-- Cadastro (NC1, NC4) -->
+    <string name="cadastro_titulo">Criar conta</string>
+    <string name="cadastro_instrucao">Preencha seus dados para criar o acesso.</string>
+    <string name="hint_nome">Nome completo</string>
+    <string name="hint_confirmar_senha">Confirmar senha</string>
+    <string name="btn_cadastrar">Criar conta</string>
+    <string name="cadastro_aviso_perfil">Seu perfil (operador de linha ou logística) é liberado pelo responsável depois do cadastro. Até lá, você não consegue usar o app.</string>
+    <string name="msg_conta_criada">Conta criada! Aguarde o responsável liberar o seu perfil.</string>
+
+    <!-- Splash (NC1, NC4) -->
+    <string name="erro_perfil_nao_liberado">Seu perfil ainda não foi liberado pelo responsável.</string>
+    <string name="erro_operador_sem_posto">Seu usuário não está vinculado a nenhum posto. Fale com o responsável.</string>
+
+    <!-- Postos (C1) -->
+    <string name="postos_titulo">Postos de trabalho</string>
+    <string name="postos_vazio">Nenhum posto cadastrado</string>
+    <string name="postos_vazio_dica">Toque no botão + para cadastrar o primeiro posto.</string>
+    <string name="posto_sem_insumos">Nenhum insumo</string>
+    <plurals name="posto_qtd_insumos">
+        <item quantity="one">%d insumo</item>
+        <item quantity="many">%d insumos</item>
+        <item quantity="other">%d insumos</item>
+    </plurals>
+
+    <!-- Formulário de posto (C1) -->
+    <string name="posto_form_titulo_novo">Novo posto</string>
+    <string name="posto_form_titulo_editar">Editar posto</string>
+    <string name="hint_nome_posto">Nome do posto</string>
+    <string name="hint_nome_insumo">Nome do insumo</string>
+    <string name="btn_adicionar_insumo">Adicionar insumo</string>
+    <string name="posto_form_insumos">Insumos usados neste posto</string>
+    <string name="posto_form_sem_insumos">Nenhum insumo adicionado ainda.</string>
+    <string name="btn_salvar">Salvar</string>
+    <string name="msg_posto_salvo">Posto salvo com sucesso</string>
+
+    <!-- Operador (C2, C5) -->
+    <string name="operador_titulo">Meus pedidos</string>
+    <string name="operador_rotulo_posto">Seu posto</string>
+    <string name="operador_vazio">Nenhum pedido em andamento</string>
+    <string name="operador_vazio_dica">Quando um insumo estiver acabando, toque em Novo pedido.</string>
+    <string name="btn_novo_pedido">Novo pedido</string>
+    <string name="btn_confirmar_recebimento">Confirmar recebimento</string>
+    <string name="dialogo_confirmar_titulo">Confirmar recebimento</string>
+    <string name="dialogo_confirmar_mensagem">Você recebeu o insumo %1$s?</string>
+    <string name="msg_recebimento_confirmado">Recebimento confirmado. Pedido encerrado.</string>
+
+    <!-- Novo cartão (C2, C3) -->
+    <string name="novo_cartao_titulo">Novo pedido de reposição</string>
+    <string name="novo_cartao_instrucao">Escolha o insumo que está acabando e a urgência. A logística verá o pedido na hora.</string>
+    <string name="hint_insumo">Insumo</string>
+    <string name="label_urgencia">Urgência</string>
+    <string name="urgencia_normal">Normal</string>
+    <string name="urgencia_alta">Alta</string>
+    <string name="urgencia_critica">Crítica</string>
+    <string name="btn_abrir_pedido">Abrir pedido</string>
+    <string name="msg_pedido_aberto">Pedido aberto. A logística já foi avisada.</string>
+
+    <!-- Quadro (C4) -->
+    <string name="quadro_titulo">Quadro de reposição</string>
+    <string name="contador_zero">0</string>
+    <string name="coluna_vazia">Nenhum cartão nesta coluna</string>
+    <string name="coluna_vazia_dica">Os cartões aparecem aqui sozinhos, em tempo real.</string>
+    <string name="btn_saiu_entrega">Saiu para entrega</string>
+    <string name="btn_marcar_entregue">Marcar entregue</string>
+    <string name="aguardando_confirmacao">Aguardando confirmação do operador</string>
+
+    <!-- Status do cartão -->
+    <string name="status_aberto">Aberto</string>
+    <string name="status_em_rota">Em rota</string>
+    <string name="status_entregue">Entregue</string>
+
+    <!-- Tempo (C6) -->
+    <string name="tempo_agora">agora</string>
+    <string name="tempo_minutos">há %1$d min</string>
+    <string name="tempo_horas">há %1$d h</string>
+    <string name="tempo_horas_minutos">há %1$d h %2$d min</string>
+    <string name="tempo_sem_horario">enviando…</string>
+
+    <!-- Validação (NC6) -->
+    <string name="erro_campo_obrigatorio">Campo obrigatório</string>
+    <string name="erro_nome_vazio">Informe seu nome</string>
+    <string name="erro_email_vazio">Informe o e-mail</string>
+    <string name="erro_email_invalido">E-mail inválido</string>
+    <string name="erro_senha_vazia">Informe a senha</string>
+    <string name="erro_senha_curta">A senha precisa ter pelo menos 6 caracteres</string>
+    <string name="erro_senhas_diferentes">As senhas não conferem</string>
+    <string name="erro_nome_posto">Informe o nome do posto</string>
+    <string name="erro_nome_insumo">Informe o nome do insumo</string>
+    <string name="erro_insumo_duplicado">Este insumo já foi adicionado</string>
+    <string name="erro_posto_sem_insumos">Adicione pelo menos um insumo</string>
+    <string name="erro_escolha_insumo">Escolha um insumo</string>
+    <string name="erro_escolha_urgencia">Escolha a urgência</string>
+
+    <!-- Regras de negócio (C3) -->
+    <string name="erro_cartao_duplicado">Já existe um pedido em andamento para este insumo</string>
+
+    <!-- Erros do Firebase traduzidos -->
+    <string name="erro_fb_email_invalido">O e-mail informado não é válido</string>
+    <string name="erro_fb_senha_fraca">Senha fraca: use pelo menos 6 caracteres</string>
+    <string name="erro_fb_usuario_nao_encontrado">Usuário não encontrado</string>
+    <string name="erro_fb_credenciais">E-mail ou senha incorretos</string>
+    <string name="erro_fb_email_em_uso">Este e-mail já está cadastrado</string>
+    <string name="erro_fb_permissao_negada">Você não tem permissão para esta ação</string>
+    <string name="erro_fb_sem_conexao">Sem conexão com a internet. Tente de novo.</string>
+    <string name="erro_generico">Algo deu errado. Tente novamente.</string>
+</resources>

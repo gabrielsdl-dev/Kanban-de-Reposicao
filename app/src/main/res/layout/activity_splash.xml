@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- NC1 / NC4: Splash. Verifica se há usuário logado e lê o perfil em usuarios/{uid}. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/raiz"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/azul_industrial"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:padding="@dimen/margem_grande">
+
+    <ImageView
+        android:id="@+id/imgLogo"
+        android:layout_width="@dimen/logo_splash"
+        android:layout_height="@dimen/logo_splash"
+        android:contentDescription="@string/cd_logo"
+        android:src="@drawable/ic_quadro"
+        app:tint="@color/amarelo_seguranca" />
+
+    <TextView
+        android:id="@+id/txtNomeApp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margem_grande"
+        android:gravity="center"
+        android:text="@string/app_name"
+        android:textColor="@color/branco"
+        android:textSize="@dimen/texto_splash"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/txtSlogan"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margem_pequena"
+        android:gravity="center"
+        android:text="@string/app_slogan"
+        android:textColor="@color/azul_container"
+        android:textSize="@dimen/texto_corpo" />
+
+    <ProgressBar
+        android:id="@+id/progresso"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginTop="@dimen/margem_grande"
+        android:indeterminateTint="@color/amarelo_seguranca" />
+
+    <!-- Mostra "perfil não liberado" etc. quando não der para seguir -->
+    <TextView
+        android:id="@+id/txtMensagem"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margem_padrao"
+        android:gravity="center"
+        android:textColor="@color/branco"
+        android:textSize="@dimen/texto_corpo"
+        android:visibility="gone" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnSair"
+        style="@style/Widget.Material3.Button.TonalButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margem_padrao"
+        android:text="@string/menu_sair"
+        android:visibility="gone"
+        app:icon="@drawable/ic_sair" />
+</LinearLayout>

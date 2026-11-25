@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- C2 / C5 / NC2 / NC5: "Meus pedidos" do operador (cartões do posto dele). -->
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/raiz"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="?android:attr/colorBackground">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/azul_industrial">
+
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbar"
+            style="@style/Widget.Kanban.Toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:theme="@style/ThemeOverlay.Kanban.Toolbar"
+            app:title="@string/operador_titulo" />
+
+        <!-- Cabeçalho com o nome do posto do operador -->
+        <LinearLayout
+            android:id="@+id/cabecalhoPosto"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingHorizontal="@dimen/margem_padrao"
+            android:paddingBottom="@dimen/margem_padrao">
+
+            <ImageView
+                android:layout_width="@dimen/icone_item"
+                android:layout_height="@dimen/icone_item"
+                android:background="@drawable/bg_icone_circular"
+                android:contentDescription="@string/cd_icone_posto"
+                android:padding="8dp"
+                android:src="@drawable/ic_fabrica"
+                app:tint="@color/azul_industrial" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/margem_padrao"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/operador_rotulo_posto"
+                    android:textColor="@color/azul_container"
+                    android:textSize="@dimen/texto_secundario" />
+
+                <TextView
+                    android:id="@+id/txtNomePosto"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@string/carregando"
+                    android:textColor="@color/branco"
+                    android:textSize="@dimen/texto_titulo"
+                    android:textStyle="bold"
+                    tools:text="Montagem 3" />
+            </LinearLayout>
+        </LinearLayout>
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvCartoes"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:paddingTop="@dimen/margem_pequena"
+            android:paddingBottom="@dimen/margem_fab_lista"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            tools:listitem="@layout/item_meu_cartao" />
+
+        <include
+            android:id="@+id/estadoVazio"
+            layout="@layout/layout_estado_vazio"
+            tools:visibility="gone" />
+    </FrameLayout>
+
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+        android:id="@+id/fabNovoPedido"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="@dimen/margem_padrao"
+        android:text="@string/btn_novo_pedido"
+        app:icon="@drawable/ic_adicionar" />
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

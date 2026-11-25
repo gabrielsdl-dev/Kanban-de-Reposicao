@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Paleta industrial TechInova -->
+    <color name="azul_industrial">#1E3A5F</color>
+    <color name="azul_claro">#2E5C8A</color>
+    <color name="amarelo_seguranca">#F5B700</color>
+    <color name="cinza_fundo">#F2F4F7</color>
+    <color name="cinza_texto">#4A5568</color>
+    <color name="verde_ok">#2E7D32</color>
+    <color name="vermelho_alerta">#C62828</color>
+    <color name="laranja_alta">#EF6C00</color>
+
+    <!-- Apoio -->
+    <color name="branco">#FFFFFF</color>
+    <color name="preto_texto">#1A202C</color>
+    <color name="cinza_borda">#D5DBE3</color>
+    <color name="cinza_icone">#A0AEC0</color>
+    <!-- Fundo das colunas do quadro (um pouco mais escuro que o fundo da tela) -->
+    <color name="cinza_coluna">#E2E7EE</color>
+    <color name="azul_container">#D6E4F3</color>
+    <color name="amarelo_container">#FFF1C2</color>
+    <color name="verde_container">#DCEFDD</color>
+    <color name="laranja_container">#FDE3CC</color>
+    <color name="vermelho_container">#F8D7D7</color>
+
+    <!-- Modo escuro -->
+    <color name="escuro_fundo">#121820</color>
+    <color name="escuro_superficie">#1C2530</color>
+    <color name="escuro_texto">#E6EAF0</color>
+    <color name="escuro_texto_secundario">#A9B4C2</color>
+    <color name="azul_claro_noite">#8FB8E3</color>
+</resources>
