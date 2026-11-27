@@ -4,13 +4,20 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.ListenerRegistration;
+import com.techinova.kanban.R;
 import com.techinova.kanban.data.AuthRepository;
 import com.techinova.kanban.data.CartaoRepository;
 import com.techinova.kanban.data.PostoRepository;
+import com.techinova.kanban.data.RepositorioCallback;
 import com.techinova.kanban.model.Cartao;
+import com.techinova.kanban.model.Insumo;
 import com.techinova.kanban.model.Posto;
+import com.techinova.kanban.model.Status;
 import com.techinova.kanban.model.Usuario;
+import com.techinova.kanban.util.ErrosFirebase;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +26,8 @@ import java.util.List;
  * C2 / C3 / C5 / NC2 / NC7: usado pela OperadorActivity (Meus pedidos) e pela NovoCartaoActivity.
  * Cada Activity tem a sua instância (ViewModelProvider(this)).
  *
- * NC7: o insumo escolhido no dropdown e a urgência escolhida ficam aqui, para não se perderem na rotação.
+ * NC7: o insumo escolhido no dropdown e a urgência escolhida ficam aqui. O ViewModel sobrevive
+ * à rotação da tela; a Activity é destruída e recriada, mas lê de volta o que estava escolhido.
  * Responsável: Pessoa B.
  */
 public class OperadorViewModel extends ViewModel {
@@ -46,6 +54,7 @@ public class OperadorViewModel extends ViewModel {
     private final MutableLiveData<Integer> mensagemSucesso = new MutableLiveData<>();
     private final MutableLiveData<Boolean> pedidoAberto = new MutableLiveData<>(false);
     private boolean dadosCarregados = false;
+    private boolean confirmando = false;
 
     public LiveData<Usuario> getUsuario() {
         return usuario;
@@ -93,37 +102,106 @@ public class OperadorViewModel extends ViewModel {
      * Só busca uma vez: na rotação os dados já estão no LiveData.
      */
     public void carregarUsuarioEPosto() {
-        // TODO [C2] if (dadosCarregados) return; dadosCarregados = true;
-        //  String uid = authRepositorio.getUsuarioAtual().getUid();
-        //  authRepositorio.buscarUsuario(uid, cb1):
-        //    onSucesso(u) -> usuario.setValue(u);
-        //                    postoRepositorio.buscarPorId(u.getPostoId(), cb2):
-        //                       onSucesso(p) -> posto.setValue(p)   (só os insumos DESTE posto, C2)
-        //    erros -> mensagemErro.setValue(ErrosFirebase.traduzir(e))
+        if (dadosCarregados) return;
+
+        FirebaseUser atual = authRepositorio.getUsuarioAtual();
+        if (atual == null) {
+            mensagemErro.setValue(R.string.erro_generico);
+            return;
+        }
+
+        dadosCarregados = true;
+        carregando.setValue(true);
+
+        authRepositorio.buscarUsuario(atual.getUid(), new RepositorioCallback<Usuario>() {
+            @Override
+            public void onSucesso(Usuario u) {
+                if (u == null || u.getPostoId() == null || u.getPostoId().isEmpty()) {
+                    carregando.setValue(false);
+                    mensagemErro.setValue(R.string.erro_operador_sem_posto);
+                    return;
+                }
+                usuario.setValue(u);
+                carregarPosto(u.getPostoId());
+            }
+
+            @Override
+            public void onErro(Exception e) {
+                falhouAoCarregar(e);
+            }
+        });
+    }
+
+    private void carregarPosto(String postoId) {
+        postoRepositorio.buscarPorId(postoId, new RepositorioCallback<Posto>() {
+            @Override
+            public void onSucesso(Posto p) {
+                carregando.setValue(false);
+                if (p == null) {
+                    mensagemErro.setValue(R.string.erro_operador_sem_posto);
+                    return;
+                }
+                posto.setValue(p); // só os insumos DESTE posto (C2)
+            }
+
+            @Override
+            public void onErro(Exception e) {
+                falhouAoCarregar(e);
+            }
+        });
+    }
+
+    private void falhouAoCarregar(Exception e) {
+        carregando.setValue(false);
+        dadosCarregados = false; // permite tentar de novo ao reabrir a tela
+        mensagemErro.setValue(ErrosFirebase.traduzir(e));
     }
 
     // ================= Meus pedidos (OperadorActivity) =================
 
     /** Chamar no onStart() da OperadorActivity, quando o postoId já for conhecido (NC2). */
     public void ouvirCartoes(String postoId) {
-        // TODO [C5/NC2] pararDeOuvirCartoes();
-        //  registroCartoes = cartaoRepositorio.ouvirDoPosto(postoId, callback):
-        //   - onSucesso(lista) -> cartoes.setValue(lista)
-        //   - onErro(e)        -> mensagemErro.setValue(ErrosFirebase.traduzir(e))
+        pararDeOuvirCartoes(); // nunca deixar dois listeners ligados ao mesmo tempo
+        registroCartoes = cartaoRepositorio.ouvirDoPosto(postoId, new RepositorioCallback<List<Cartao>>() {
+            @Override
+            public void onSucesso(List<Cartao> lista) {
+                cartoes.setValue(lista);
+            }
+
+            @Override
+            public void onErro(Exception e) {
+                mensagemErro.setValue(ErrosFirebase.traduzir(e));
+            }
+        });
     }
 
     /** Chamar no onStop() da OperadorActivity (NC2). */
     public void pararDeOuvirCartoes() {
-        // TODO [NC2] if (registroCartoes != null) { registroCartoes.remove(); registroCartoes = null; }
+        if (registroCartoes != null) {
+            registroCartoes.remove();
+            registroCartoes = null;
+        }
     }
 
     /** C5: confirma o recebimento (só para cartão "entregue"). */
     public void confirmarRecebimento(Cartao cartao) {
-        // TODO [C5] Se !Status.ENTREGUE.equals(cartao.getStatus()) -> return.
-        //  cartaoRepositorio.confirmar(cartao, callback):
-        //   - onSucesso -> mensagemSucesso.setValue(R.string.msg_recebimento_confirmado)
-        //                  (o cartão some sozinho da lista pelo snapshot listener)
-        //   - onErro    -> mensagemErro.setValue(ErrosFirebase.traduzir(e))
+        if (!Status.ENTREGUE.equals(cartao.getStatus()) || confirmando) return;
+        confirmando = true;
+
+        cartaoRepositorio.confirmar(cartao, new RepositorioCallback<Void>() {
+            @Override
+            public void onSucesso(Void resultado) {
+                confirmando = false;
+                // O cartão some da lista sozinho: o snapshot listener percebe o delete.
+                mensagemSucesso.setValue(R.string.msg_recebimento_confirmado);
+            }
+
+            @Override
+            public void onErro(Exception e) {
+                confirmando = false;
+                mensagemErro.setValue(ErrosFirebase.traduzir(e));
+            }
+        });
     }
 
     // ================= Novo cartão (NovoCartaoActivity) =================
@@ -140,21 +218,62 @@ public class OperadorViewModel extends ViewModel {
 
     /**
      * C2 + C3: abre o pedido com o insumo e a urgência escolhidos.
-     * A Activity já validou (insumo e urgência escolhidos) antes de chamar.
+     * A Activity já validou na tela; aqui conferimos de novo para nunca gravar dado inválido.
      */
     public void abrirPedido() {
-        // TODO [C2] Posto p = posto.getValue(); Insumo insumo = p.getInsumos().get(indiceInsumoSelecionado);
-        //  Cartao cartao = new Cartao(p.getId(), p.getNome(), insumo.getId(), insumo.getNome(),
-        //                             urgenciaSelecionada.getValue(), authRepositorio.getUsuarioAtual().getUid());
-        //  carregando = true; cartaoRepositorio.abrir(cartao, callback):
-        //   - onSucesso -> carregando = false; pedidoAberto.setValue(true)  (Activity mostra msg e finish())
-        //   - onErro    -> carregando = false; mensagemErro = ErrosFirebase.traduzir(e)
-        //     (C3: cartão duplicado vira "Já existe um pedido em andamento para este insumo")
+        if (Boolean.TRUE.equals(carregando.getValue())) return; // evita toque duplo
+
+        Posto p = posto.getValue();
+        Integer indice = indiceInsumoSelecionado.getValue();
+        Integer urgencia = urgenciaSelecionada.getValue();
+        FirebaseUser atual = authRepositorio.getUsuarioAtual();
+
+        if (p == null || p.getInsumos() == null || indice == null
+                || indice < 0 || indice >= p.getInsumos().size()) {
+            mensagemErro.setValue(R.string.erro_escolha_insumo);
+            return;
+        }
+        if (urgencia == null || urgencia == NENHUM) {
+            mensagemErro.setValue(R.string.erro_escolha_urgencia);
+            return;
+        }
+        Insumo insumo = p.getInsumos().get(indice);
+        if (atual == null || insumo.getId() == null) {
+            mensagemErro.setValue(R.string.erro_generico);
+            return;
+        }
+
+        Cartao cartao = new Cartao(p.getId(), p.getNome(), insumo.getId(), insumo.getNome(),
+                urgencia, atual.getUid());
+
+        carregando.setValue(true);
+        cartaoRepositorio.abrir(cartao, new RepositorioCallback<Void>() {
+            @Override
+            public void onSucesso(Void resultado) {
+                carregando.setValue(false);
+                pedidoAberto.setValue(true);
+            }
+
+            @Override
+            public void onErro(Exception e) {
+                carregando.setValue(false);
+                // C3: o abrir() lança ALREADY_EXISTS quando já há pedido desse insumo no posto.
+                // Tratamos aqui mesmo, para a mensagem certa aparecer independente do ErrosFirebase.
+                if (e instanceof FirebaseFirestoreException
+                        && ((FirebaseFirestoreException) e).getCode()
+                        == FirebaseFirestoreException.Code.ALREADY_EXISTS) {
+                    mensagemErro.setValue(R.string.erro_cartao_duplicado);
+                } else {
+                    mensagemErro.setValue(ErrosFirebase.traduzir(e));
+                }
+            }
+        });
     }
 
     /** Item "Sair" do menu (NC1). */
     public void sair() {
-        // TODO [NC1] pararDeOuvirCartoes(); authRepositorio.logout();
+        pararDeOuvirCartoes();
+        authRepositorio.logout();
     }
 
     @Override
