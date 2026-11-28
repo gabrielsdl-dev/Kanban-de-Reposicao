@@ -43,12 +43,6 @@
             android:paddingVertical="@dimen/margem_padrao">
 
             <!-- ===== Coluna ABERTO ===== -->
-            <androidx.fragment.app.FragmentContainerView
-                android:id="@+id/containerAberto"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1" />
-
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="@dimen/coluna_largura"
                 android:layout_height="match_parent"
@@ -64,6 +58,12 @@
                     <include
                         android:id="@+id/cabecalhoAberto"
                         layout="@layout/layout_cabecalho_coluna" />
+
+                    <androidx.fragment.app.FragmentContainerView
+                        android:id="@+id/containerAberto"
+                        android:layout_width="match_parent"
+                        android:layout_height="0dp"
+                        android:layout_weight="1" />
 
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>

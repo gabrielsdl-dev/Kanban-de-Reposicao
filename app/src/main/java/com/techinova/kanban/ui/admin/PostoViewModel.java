@@ -8,8 +8,10 @@ import androidx.lifecycle.ViewModel;
 import com.google.firebase.firestore.ListenerRegistration;
 import com.techinova.kanban.data.AuthRepository;
 import com.techinova.kanban.data.PostoRepository;
+import com.techinova.kanban.data.RepositorioCallback;
 import com.techinova.kanban.model.Insumo;
 import com.techinova.kanban.model.Posto;
+import com.techinova.kanban.util.ErrosFirebase;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -77,15 +79,27 @@ public class PostoViewModel extends ViewModel {
 
     /** Chamar no onStart() da PostosActivity (NC2). */
     public void ouvirPostos() {
-        // TODO [C1/NC2] registroPostos = repositorio.ouvirPostos(callback):
-        //  - onSucesso(lista) -> postos.setValue(lista)
-        //  - onErro(e)        -> mensagemErro.setValue(ErrosFirebase.traduzir(e))
-        //  Antes de registrar, chame pararDeOuvirPostos() para não registrar dois listeners.
+        pararDeOuvirPostos(); //evita listeners duplicados
+
+        registroPostos = repositorio.ouvirPostos(new RepositorioCallback<List<Posto>>() {
+            @Override
+            public void onSucesso(List<Posto> lista) {
+                postos.setValue(lista);
+            }
+
+            @Override
+            public void onErro(Exception e) {
+                mensagemErro.setValue(ErrosFirebase.traduzir(e));
+            }
+        });
     }
 
     /** Chamar no onStop() da PostosActivity (NC2). */
     public void pararDeOuvirPostos() {
-        // TODO [NC2] if (registroPostos != null) { registroPostos.remove(); registroPostos = null; }
+        if (registroPostos != null) {
+            registroPostos.remove();
+            registroPostos = null;
+        }
     }
 
     // ================= Formulário (PostoFormActivity) =================

@@ -12,7 +12,10 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.techinova.kanban.R;
 import com.techinova.kanban.databinding.ActivityOperadorBinding;
+import com.techinova.kanban.model.Posto;
 import com.techinova.kanban.util.InsetsUtil;
+
+import com.techinova.kanban.util.Constantes;
 
 /**
  * C5 / C6 / NC2 / NC5: "Meus pedidos" do operador — cartões do posto dele, em tempo real,
@@ -30,8 +33,8 @@ public class OperadorActivity extends AppCompatActivity {
     private final Runnable atualizarTempo = new Runnable() {
         @Override
         public void run() {
-            // TODO [C6] adapter.notifyDataSetChanged();
-            //  handler.postDelayed(this, Constantes.INTERVALO_ATUALIZACAO_MS);
+            adapter.notifyDataSetChanged();
+            handler.postDelayed(this, Constantes.INTERVALO_ATUALIZACAO_MS);
         }
     };
 
@@ -82,16 +85,18 @@ public class OperadorActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        // TODO [NC2] Se o posto já estiver carregado (viewModel.getPosto().getValue() != null),
-        //  viewModel.ouvirCartoes(posto.getId()). (Ao voltar da tela Novo pedido, volta a ouvir.)
-        // TODO [C6] handler.postDelayed(atualizarTempo, Constantes.INTERVALO_ATUALIZACAO_MS);
+        Posto posto = viewModel.getPosto().getValue();
+        if(posto != null){
+            viewModel.ouvirCartoes(posto.getId());
+        }
+        handler.postDelayed(atualizarTempo, Constantes.INTERVALO_ATUALIZACAO_MS);
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        // TODO [NC2] viewModel.pararDeOuvirCartoes();  (ListenerRegistration.remove())
-        // TODO [C6] handler.removeCallbacks(atualizarTempo);  (para o timer)
+        viewModel.pararDeOuvirCartoes();
+        handler.removeCallbacks(atualizarTempo);
     }
 
     @Override

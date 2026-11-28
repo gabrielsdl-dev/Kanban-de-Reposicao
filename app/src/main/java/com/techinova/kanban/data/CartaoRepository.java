@@ -4,8 +4,11 @@ import androidx.annotation.Nullable;
 
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.ListenerRegistration;
+import com.google.firebase.firestore.Query;
 import com.techinova.kanban.model.Cartao;
+import com.techinova.kanban.model.Status;
 import com.techinova.kanban.util.Constantes;
+import com.google.firebase.firestore.FieldValue; //Ele é o import responsável por informar ao Firestore gravar a hora do servidor
 
 import java.util.List;
 
@@ -66,17 +69,19 @@ public class CartaoRepository {
      */
     @Nullable
     public ListenerRegistration ouvirPorStatus(String status, RepositorioCallback<List<Cartao>> callback) {
-        // TODO [C4/NC2] return db.collection(Constantes.COL_CARTOES)
-        //      .whereEqualTo(Constantes.CAMPO_STATUS, status)
-        //      .orderBy(Constantes.CAMPO_URGENCIA, Query.Direction.DESCENDING)
-        //      .orderBy(Constantes.CAMPO_ABERTO_EM)
-        //      .addSnapshotListener((snap, erro) -> {
-        //          if (erro != null) { callback.onErro(erro); return; }
-        //          callback.onSucesso(snap.toObjects(Cartao.class));
-        //      });
-        //  Se aparecer erro FAILED_PRECONDITION no Logcat, falta publicar o índice: o próprio erro
-        //  traz um link que cria o índice no console.
-        return null;
+        return db.collection(Constantes.COL_CARTOES)
+                .whereEqualTo(Constantes.CAMPO_STATUS, status)
+                .orderBy(Constantes.CAMPO_URGENCIA, Query.Direction.DESCENDING)
+                .orderBy(Constantes.CAMPO_ABERTO_EM, Query.Direction.ASCENDING)
+                .addSnapshotListener((snap, erro) -> {
+                    if(erro != null) {
+                        callback.onErro(erro);
+                        return;
+                    }
+                    if(snap != null) {
+                        callback.onSucesso(snap.toObjects(Cartao.class));
+                    }
+                });
     }
 
     /**
@@ -101,15 +106,18 @@ public class CartaoRepository {
      *  entregue            : não faz nada (só o operador encerra, em confirmar()).
      */
     public void avancarStatus(Cartao cartao, RepositorioCallback<Void> callback) {
-        // TODO [C4/C6] String proximo = Status.proximo(cartao.getStatus()); se null -> return.
-        //  String campoHorario = Status.EM_ROTA.equals(proximo)
-        //          ? Constantes.CAMPO_EM_ROTA_EM : Constantes.CAMPO_ENTREGUE_EM;
-        //  db.collection(Constantes.COL_CARTOES).document(cartao.getId())
-        //    .update(Constantes.CAMPO_STATUS, proximo,
-        //            campoHorario, FieldValue.serverTimestamp())
-        //    .addOnSuccessListener(x -> callback.onSucesso(null))
-        //    .addOnFailureListener(callback::onErro);
-        //  As regras só aceitam aberto->em_rota e em_rota->entregue, e só para a logística.
+        String proximo = Status.proximo(cartao.getStatus());
+        if(proximo == null) return; //Confere se já foi entregue, caso sim, não tem para onde mais avançar o cartão
+
+        String campoHorario = Status.EM_ROTA.equals(proximo)
+               ? Constantes.CAMPO_EM_ROTA_EM
+               : Constantes.CAMPO_ENTREGUE_EM;
+
+        db.collection(Constantes.COL_CARTOES).document(cartao.getId())
+                .update(Constantes.CAMPO_STATUS, proximo,
+                        campoHorario, FieldValue.serverTimestamp())
+                .addOnSuccessListener(x -> callback.onSucesso(null))
+                .addOnFailureListener(callback::onErro);
     }
 
     /**

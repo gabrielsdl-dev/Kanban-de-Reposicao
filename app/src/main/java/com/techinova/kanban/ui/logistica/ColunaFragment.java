@@ -36,8 +36,8 @@ public class ColunaFragment extends Fragment {
     private final Runnable atualizarTempo = new Runnable() {
         @Override
         public void run() {
-            // TODO [C6] adapter.notifyDataSetChanged();
-            //  handler.postDelayed(this, Constantes.INTERVALO_ATUALIZACAO_MS);
+            adapter.notifyDataSetChanged();
+            handler.postDelayed(this, Constantes.INTERVALO_ATUALIZACAO_MS);
         }
     };
 
@@ -72,8 +72,7 @@ public class ColunaFragment extends Fragment {
         viewModel = new ViewModelProvider(requireActivity()).get(QuadroViewModel.class);
 
         adapter = new CartaoAdapter(cartao -> {
-            // TODO [C4] viewModel.avancar(cartao);
-            //  (Aberto -> Em rota -> Entregue; o cartão muda de coluna sozinho pelo listener)
+            viewModel.avancar(cartao);
         });
         binding.rvCartoes.setAdapter(adapter);
 
@@ -81,25 +80,26 @@ public class ColunaFragment extends Fragment {
         binding.estadoVazio.txtEstadoVazio.setText(R.string.coluna_vazia);
         binding.estadoVazio.txtEstadoVazioDica.setText(R.string.coluna_vazia_dica);
 
-        // TODO [C4/NC5] viewModel.getCartoes(status).observe(getViewLifecycleOwner(), lista -> {
-        //      adapter.submeterLista(lista);
-        //      boolean vazio = lista == null || lista.isEmpty();
-        //      binding.estadoVazio.getRoot().setVisibility(vazio ? View.VISIBLE : View.GONE);
-        //      binding.rvCartoes.setVisibility(vazio ? View.GONE : View.VISIBLE); });
+        viewModel.getCartoes(status).observe(getViewLifecycleOwner(), lista -> {
+            adapter.submeterLista(lista);
+            boolean vazio = lista == null || lista.isEmpty();
+            binding.estadoVazio.getRoot().setVisibility(vazio ? View.VISIBLE : View.GONE);
+            binding.rvCartoes.setVisibility(vazio ? View.GONE : View.VISIBLE);
+        });
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        // TODO [NC2] viewModel.ouvir(status);  (registra o snapshot listener desta coluna)
-        // TODO [C6] handler.postDelayed(atualizarTempo, Constantes.INTERVALO_ATUALIZACAO_MS);
+        viewModel.ouvir(status);
+        handler.postDelayed(atualizarTempo, Constantes.INTERVALO_ATUALIZACAO_MS);
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        // TODO [NC2] viewModel.pararDeOuvir(status);  (ListenerRegistration.remove())
-        // TODO [C6] handler.removeCallbacks(atualizarTempo);  (para o timer)
+        viewModel.pararDeOuvir(status);
+        handler.removeCallbacks(atualizarTempo);
     }
 
     @Override

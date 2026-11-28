@@ -15,6 +15,8 @@ import com.techinova.kanban.databinding.LayoutCabecalhoColunaBinding;
 import com.techinova.kanban.model.Status;
 import com.techinova.kanban.util.InsetsUtil;
 
+import com.google.android.material.snackbar.Snackbar;
+
 /**
  * C4 / NC2: quadro da logística no estilo Trello — as colunas Aberto, Em rota e Entregue
  * ficam lado a lado e o quadro rola na horizontal.
@@ -67,12 +69,19 @@ public class QuadroActivity extends AppCompatActivity {
     }
 
     private void observarViewModel() {
-        // TODO [C4] Contador no cabeçalho de cada coluna. Para cada coluna:
-        //  viewModel.getCartoes(Status.ABERTO).observe(this, lista ->
-        //      binding.cabecalhoAberto.txtContador.setText(String.valueOf(lista.size())));
-        //  (repita para Status.EM_ROTA -> binding.cabecalhoEmRota
-        //   e Status.ENTREGUE -> binding.cabecalhoEntregue)
-        // TODO [C4] viewModel.getMensagemErro().observe(...) -> Snackbar + limparMensagem().
+        viewModel.getCartoes(Status.ABERTO).observe(this, lista ->
+                binding.cabecalhoAberto.txtContador.setText(String.valueOf(lista.size())));
+        viewModel.getCartoes(Status.EM_ROTA).observe(this, lista ->
+                binding.cabecalhoEmRota.txtContador.setText(String.valueOf(lista.size())));
+        viewModel.getCartoes(Status.ENTREGUE).observe(this, lista ->
+                binding.cabecalhoEntregue.txtContador.setText(String.valueOf(lista.size())));
+
+        viewModel.getMensagemErro().observe(this, mensagem -> {
+            if(mensagem != null) {
+                Snackbar.make(binding.getRoot(), mensagem, Snackbar.LENGTH_LONG).show();
+                viewModel.limparMensagem();
+            }
+        });
     }
 
     @Override

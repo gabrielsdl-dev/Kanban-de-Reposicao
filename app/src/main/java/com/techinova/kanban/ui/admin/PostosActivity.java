@@ -66,13 +66,13 @@ public class PostosActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        // TODO [NC2] viewModel.ouvirPostos();  (registra o snapshot listener)
+        viewModel.ouvirPostos();
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        // TODO [NC2] viewModel.pararDeOuvirPostos();  (ListenerRegistration.remove())
+        viewModel.pararDeOuvirPostos();
     }
 
     @Override

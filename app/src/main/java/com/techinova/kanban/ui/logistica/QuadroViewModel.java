@@ -9,6 +9,8 @@ import com.techinova.kanban.data.AuthRepository;
 import com.techinova.kanban.data.CartaoRepository;
 import com.techinova.kanban.model.Cartao;
 import com.techinova.kanban.model.Status;
+import com.techinova.kanban.data.RepositorioCallback;
+import com.techinova.kanban.util.ErrosFirebase;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -53,24 +55,42 @@ public class QuadroViewModel extends ViewModel {
 
     /** Chamar no onStart() do ColunaFragment (NC2). */
     public void ouvir(String status) {
-        // TODO [C4/NC2] pararDeOuvir(status);   // evita listener duplicado
-        //  ListenerRegistration reg = repositorio.ouvirPorStatus(status, callback):
-        //   - onSucesso(lista) -> cartoesPorStatus.get(status).setValue(lista)
-        //   - onErro(e)        -> mensagemErro.setValue(ErrosFirebase.traduzir(e))
-        //  registros.put(status, reg);
+        pararDeOuvir(status); // evita listener duplicado
+
+        ListenerRegistration reg = repositorio.ouvirPorStatus(status,
+                new RepositorioCallback<List<Cartao>>() {
+                    @Override
+                    public void onSucesso(List<Cartao> lista) {
+                        cartoesPorStatus.get(status).setValue(lista);
+                    }
+
+                    @Override
+                    public void onErro(Exception e) {
+                        mensagemErro.setValue(ErrosFirebase.traduzir(e));
+                    }
+                });
+        registros.put(status, reg);
     }
 
     /** Chamar no onStop() do ColunaFragment (NC2). */
     public void pararDeOuvir(String status) {
-        // TODO [NC2] ListenerRegistration reg = registros.remove(status);
-        //  if (reg != null) reg.remove();
+        ListenerRegistration reg = registros.remove(status);
+        if (reg != null) reg.remove();
     }
 
     /** C4: botão "Saiu para entrega" / "Marcar entregue" do cartão. */
     public void avancar(Cartao cartao) {
-        // TODO [C4/C6] repositorio.avancarStatus(cartao, callback):
-        //   - onSucesso -> nada a fazer: o snapshot listener move o cartão de coluna sozinho
-        //   - onErro    -> mensagemErro.setValue(ErrosFirebase.traduzir(e))
+        repositorio.avancarStatus(cartao, new RepositorioCallback<Void>() {
+            @Override
+            public void onSucesso(Void resultado) {
+                // o listener move o cartão sozinho
+            }
+
+            @Override
+            public void onErro(Exception e) {
+                mensagemErro.setValue(ErrosFirebase.traduzir(e));
+            }
+        });
     }
 
     /** Item "Sair" do menu (NC1). */

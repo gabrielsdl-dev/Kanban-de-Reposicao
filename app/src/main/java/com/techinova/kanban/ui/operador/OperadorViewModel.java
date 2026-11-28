@@ -12,6 +12,9 @@ import com.techinova.kanban.model.Cartao;
 import com.techinova.kanban.model.Posto;
 import com.techinova.kanban.model.Usuario;
 
+import com.techinova.kanban.data.RepositorioCallback;
+import com.techinova.kanban.util.ErrosFirebase;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -114,7 +117,10 @@ public class OperadorViewModel extends ViewModel {
 
     /** Chamar no onStop() da OperadorActivity (NC2). */
     public void pararDeOuvirCartoes() {
-        // TODO [NC2] if (registroCartoes != null) { registroCartoes.remove(); registroCartoes = null; }
+        if(registroCartoes != null) {
+            registroCartoes.remove();
+            registroCartoes = null;
+        }
     }
 
     /** C5: confirma o recebimento (só para cartão "entregue"). */
