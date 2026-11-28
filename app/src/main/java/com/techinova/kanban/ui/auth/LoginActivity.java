@@ -1,18 +1,20 @@
 package com.techinova.kanban.ui.auth;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
+import android.view.inputmethod.EditorInfo;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.google.android.material.snackbar.Snackbar;
 import com.techinova.kanban.databinding.ActivityLoginBinding;
+import com.techinova.kanban.ui.operador.OperadorActivity;
+import com.techinova.kanban.ui.logistica.QuadroActivity;
 import com.techinova.kanban.util.InsetsUtil;
+import com.techinova.kanban.util.Validacao;
 
-/**
- * NC1 / NC6 / NC7: login com e-mail e senha.
- * NC7: os campos têm android:id, então o Android já guarda o texto digitado na rotação.
- * Responsável: Pessoa A.
- */
 public class LoginActivity extends AppCompatActivity {
 
     private ActivityLoginBinding binding;
@@ -35,28 +37,67 @@ public class LoginActivity extends AppCompatActivity {
 
     private void configurarCliques() {
         binding.btnEntrar.setOnClickListener(v -> {
-            // TODO [NC6] boolean ok = Validacao.email(binding.tilEmail) & Validacao.senha(binding.tilSenha);
-            //  if (!ok) return;
-            // TODO [NC1] viewModel.login(Validacao.texto(binding.tilEmail), senha digitada);
+            boolean ok = Validacao.email(binding.tilEmail) & Validacao.senha(binding.tilSenha);
+            if (!ok) return;
+
+            String email = Validacao.texto(binding.tilEmail);
+            String senha = binding.tilSenha.getEditText() != null
+                    ? binding.tilSenha.getEditText().getText().toString()
+                    : "";
+
+            viewModel.login(email, senha);
         });
 
-        binding.btnCriarConta.setOnClickListener(v -> {
-            // TODO [NC1] startActivity(new Intent(this, CadastroActivity.class));
-        });
+        binding.btnCriarConta.setOnClickListener(v ->
+                startActivity(new Intent(this, CadastroActivity.class))
+        );
 
-        // TODO [NC6] (opcional) binding.edtSenha.setOnEditorActionListener: IME_ACTION_DONE -> btnEntrar.performClick()
+        binding.edtSenha.setOnEditorActionListener((v, actionId, event) -> {
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                binding.btnEntrar.performClick();
+                return true;
+            }
+            return false;
+        });
     }
 
     private void observarViewModel() {
-        // TODO [NC1] viewModel.getCarregando().observe(this, c -> {
-        //      binding.progresso.setVisibility(c ? View.VISIBLE : View.GONE);
-        //      binding.btnEntrar.setEnabled(!c); });
-        // TODO [NC1/NC6] viewModel.getMensagemErro().observe(this, res -> {
-        //      if (res == null) return;
-        //      Snackbar.make(binding.getRoot(), res, Snackbar.LENGTH_LONG).show();
-        //      viewModel.limparMensagem(); });
-        // TODO [NC1/NC4] viewModel.getDestino().observe(...): igual à SplashActivity
-        //  (LOGISTICA -> QuadroActivity, OPERADOR -> OperadorActivity, SEM_PERFIL -> SplashActivity
-        //  para mostrar o aviso). Use FLAG_ACTIVITY_NEW_TASK | FLAG_ACTIVITY_CLEAR_TASK e finish().
+        viewModel.getCarregando().observe(this, c -> {
+            boolean carregando = Boolean.TRUE.equals(c);
+            binding.progresso.setVisibility(carregando ? View.VISIBLE : View.GONE);
+            binding.btnEntrar.setEnabled(!carregando);
+        });
+
+        viewModel.getMensagemErro().observe(this, res -> {
+            if (res == null) return;
+            Snackbar.make(binding.getRoot(), res, Snackbar.LENGTH_LONG).show();
+            viewModel.limparMensagem();
+        });
+
+        viewModel.getDestino().observe(this, destino -> {
+            if (destino == null) return;
+
+            Intent intent = null;
+            switch (destino) {
+                case LOGISTICA:
+                    intent = new Intent(this, QuadroActivity.class);
+                    break;
+                case OPERADOR:
+                    intent = new Intent(this, OperadorActivity.class);
+                    break;
+                case SEM_PERFIL:
+                case OPERADOR_SEM_POSTO:
+                    intent = new Intent(this, SplashActivity.class);
+                    break;
+                case LOGIN:
+                    return;
+            }
+
+            if (intent != null) {
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                startActivity(intent);
+                finish();
+            }
+        });
     }
 }

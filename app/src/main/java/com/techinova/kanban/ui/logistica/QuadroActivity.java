@@ -1,5 +1,6 @@
 package com.techinova.kanban.ui.logistica;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -9,10 +10,13 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.techinova.kanban.R;
 import com.techinova.kanban.databinding.ActivityQuadroBinding;
 import com.techinova.kanban.databinding.LayoutCabecalhoColunaBinding;
 import com.techinova.kanban.model.Status;
+import com.techinova.kanban.ui.admin.PostosActivity;
+import com.techinova.kanban.ui.auth.LoginActivity;
 import com.techinova.kanban.util.InsetsUtil;
 
 /**
@@ -81,15 +85,26 @@ public class QuadroActivity extends AppCompatActivity {
         return true;
     }
 
+
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == R.id.acaoPostos) {
-            // TODO [C1] startActivity(new Intent(this, PostosActivity.class));
+            startActivity(new Intent(this, PostosActivity.class));
             return true;
         }
         if (item.getItemId() == R.id.acaoSair) {
-            // TODO [NC1] Diálogo de confirmação -> viewModel.sair() -> LoginActivity
-            //  (FLAG_ACTIVITY_NEW_TASK | FLAG_ACTIVITY_CLEAR_TASK) e finish().
+            new MaterialAlertDialogBuilder(this)
+                    .setTitle(R.string.dialogo_sair_titulo) // Ou "Sair da conta"
+                    .setMessage(R.string.dialogo_sair_mensagem) // Ou "Deseja realmente sair da sua conta?"
+                    .setNegativeButton(R.string.cancelar, null) // Ou "Cancelar"
+                    .setPositiveButton(R.string.dialogo_sair_titulo, (dialog, which) -> {
+                        viewModel.sair();
+                        Intent intent = new Intent(this, LoginActivity.class);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        startActivity(intent);
+                        finish();
+                    })
+                    .show();
             return true;
         }
         return super.onOptionsItemSelected(item);

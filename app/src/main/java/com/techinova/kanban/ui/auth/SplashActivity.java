@@ -1,22 +1,18 @@
 package com.techinova.kanban.ui.auth;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.techinova.kanban.R;
 import com.techinova.kanban.databinding.ActivitySplashBinding;
+import com.techinova.kanban.ui.operador.OperadorActivity; // Ajuste o pacote se necessário (Alt+Enter)
+import com.techinova.kanban.ui.logistica.QuadroActivity;     // Ajuste o pacote se necessário (Alt+Enter)
 import com.techinova.kanban.util.InsetsUtil;
 
-/**
- * NC1 / NC4: primeira tela. Verifica se já existe sessão (o Firebase Auth mantém o login
- * ao reabrir o app) e lê o perfil em usuarios/{uid} para direcionar:
- *  - sem usuário        -> LoginActivity
- *  - logistica          -> QuadroActivity
- *  - operador com posto -> OperadorActivity
- *  - sem perfil         -> mostra R.string.erro_perfil_nao_liberado + botão Sair
- * Responsável: Pessoa A.
- */
 public class SplashActivity extends AppCompatActivity {
 
     private ActivitySplashBinding binding;
@@ -32,25 +28,53 @@ public class SplashActivity extends AppCompatActivity {
 
         viewModel = new ViewModelProvider(this).get(AuthViewModel.class);
 
-        // Opcional: CloudinaryConfig.inicializar(this);  (o CORE não usa fotos)
-
-        binding.btnSair.setOnClickListener(v -> {
-            // TODO [NC1] viewModel.sair(); (o observer do destino leva para o Login)
-        });
+        binding.btnSair.setOnClickListener(v -> viewModel.sair());
 
         observarViewModel();
 
-        // TODO [NC1/NC4] Só na primeira criação (savedInstanceState == null) chamar
-        //  viewModel.verificarSessao(). Na rotação o destino já está no LiveData.
+        if (savedInstanceState == null) {
+            viewModel.verificarSessao();
+        }
     }
 
     private void observarViewModel() {
-        // TODO [NC1/NC4] viewModel.getDestino().observe(this, destino -> { switch (destino) ... }):
-        //  - LOGIN      -> startActivity(new Intent(this, LoginActivity.class)); finish();
-        //  - LOGISTICA  -> startActivity(new Intent(this, QuadroActivity.class)); finish();
-        //  - OPERADOR   -> startActivity(new Intent(this, OperadorActivity.class)); finish();
-        //  - SEM_PERFIL / OPERADOR_SEM_POSTO -> esconder binding.progresso, mostrar binding.txtMensagem
-        //    com R.string.erro_perfil_nao_liberado / R.string.erro_operador_sem_posto e mostrar binding.btnSair.
-        //  viewModel.getMensagemErro().observe(...) -> mostrar a mensagem em binding.txtMensagem.
+        viewModel.getDestino().observe(this, destino -> {
+            if (destino == null) return;
+
+            switch (destino) {
+                case LOGIN:
+                    startActivity(new Intent(this, LoginActivity.class));
+                    finish();
+                    break;
+                case LOGISTICA:
+                    startActivity(new Intent(this, QuadroActivity.class));
+                    finish();
+                    break;
+                case OPERADOR:
+                    startActivity(new Intent(this, OperadorActivity.class));
+                    finish();
+                    break;
+                case SEM_PERFIL:
+                    binding.progresso.setVisibility(View.GONE);
+                    binding.txtMensagem.setVisibility(View.VISIBLE);
+                    binding.txtMensagem.setText(R.string.erro_perfil_nao_liberado);
+                    binding.btnSair.setVisibility(View.VISIBLE);
+                    break;
+                case OPERADOR_SEM_POSTO:
+                    binding.progresso.setVisibility(View.GONE);
+                    binding.txtMensagem.setVisibility(View.VISIBLE);
+                    binding.txtMensagem.setText(R.string.erro_operador_sem_posto);
+                    binding.btnSair.setVisibility(View.VISIBLE);
+                    break;
+            }
+        });
+
+        viewModel.getMensagemErro().observe(this, res -> {
+            if (res == null) return;
+            binding.progresso.setVisibility(View.GONE);
+            binding.txtMensagem.setVisibility(View.VISIBLE);
+            binding.txtMensagem.setText(res);
+            binding.btnSair.setVisibility(View.VISIBLE);
+        });
     }
 }

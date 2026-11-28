@@ -6,10 +6,13 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.google.firebase.firestore.ListenerRegistration;
+import com.techinova.kanban.R;
 import com.techinova.kanban.data.AuthRepository;
 import com.techinova.kanban.data.PostoRepository;
+import com.techinova.kanban.data.RepositorioCallback;
 import com.techinova.kanban.model.Insumo;
 import com.techinova.kanban.model.Posto;
+import com.techinova.kanban.util.ErrosFirebase;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -77,26 +80,56 @@ public class PostoViewModel extends ViewModel {
 
     /** Chamar no onStart() da PostosActivity (NC2). */
     public void ouvirPostos() {
-        // TODO [C1/NC2] registroPostos = repositorio.ouvirPostos(callback):
-        //  - onSucesso(lista) -> postos.setValue(lista)
-        //  - onErro(e)        -> mensagemErro.setValue(ErrosFirebase.traduzir(e))
-        //  Antes de registrar, chame pararDeOuvirPostos() para não registrar dois listeners.
+        pararDeOuvirPostos();
+        registroPostos = repositorio.ouvirPostos(new RepositorioCallback<List<Posto>>() {
+            @Override
+            public void onSucesso(List<Posto> lista) {
+                postos.setValue(lista);
+            }
+
+            @Override
+            public void onErro(Exception e) {
+                mensagemErro.setValue(ErrosFirebase.traduzir(e));
+            }
+        });
     }
 
     /** Chamar no onStop() da PostosActivity (NC2). */
     public void pararDeOuvirPostos() {
-        // TODO [NC2] if (registroPostos != null) { registroPostos.remove(); registroPostos = null; }
+        if (registroPostos != null) {
+            registroPostos.remove();
+            registroPostos = null;
+        }
     }
 
     // ================= Formulário (PostoFormActivity) =================
 
     /** Carrega um posto existente para edição. Só busca uma vez (rotação não recarrega). */
     public void carregarPosto(String postoId) {
-        // TODO [C1] if (postoJaCarregado) return; postoJaCarregado = true; postoIdEmEdicao = postoId;
-        //  repositorio.buscarPorId(postoId, callback):
-        //   - onSucesso(posto) -> nomeCarregado.setValue(posto.getNome());
-        //                         insumosFormulario.setValue(new ArrayList<>(posto.getInsumos()))
-        //   - onErro(e)        -> mensagemErro = ErrosFirebase.traduzir(e)
+        if (postoJaCarregado) return;
+        postoJaCarregado = true;
+        postoIdEmEdicao = postoId;
+
+        carregando.setValue(true);
+        repositorio.buscarPorId(postoId, new RepositorioCallback<Posto>() {
+            @Override
+            public void onSucesso(Posto posto) {
+                carregando.setValue(false);
+                if (posto != null) {
+                    nomeCarregado.setValue(posto.getNome());
+                    List<Insumo> lista = posto.getInsumos() != null
+                            ? new ArrayList<>(posto.getInsumos())
+                            : new ArrayList<>();
+                    insumosFormulario.setValue(lista);
+                }
+            }
+
+            @Override
+            public void onErro(Exception e) {
+                carregando.setValue(false);
+                mensagemErro.setValue(ErrosFirebase.traduzir(e));
+            }
+        });
     }
 
     /**
@@ -106,17 +139,35 @@ public class PostoViewModel extends ViewModel {
      */
     @StringRes
     public int adicionarInsumo(String nome) {
-        // TODO [C1/NC6] - nome vazio -> return R.string.erro_nome_insumo
-        //  - já existe insumo com o mesmo nome (equalsIgnoreCase) -> return R.string.erro_insumo_duplicado
-        //  - senão: copiar a lista atual, add(new Insumo(null, nome)) e insumosFormulario.setValue(copia)
-        //    (o id é gerado no PostoRepository.salvar)
-        //  return 0;
+        if (nome == null || nome.trim().isEmpty()) {
+            return R.string.erro_nome_insumo;
+        }
+
+        String nomeLimpo = nome.trim();
+        List<Insumo> atual = insumosFormulario.getValue() != null
+                ? insumosFormulario.getValue()
+                : new ArrayList<>();
+
+        for (Insumo item : atual) {
+            if (item.getNome() != null && item.getNome().trim().equalsIgnoreCase(nomeLimpo)) {
+                return R.string.erro_insumo_duplicado;
+            }
+        }
+
+        List<Insumo> copia = new ArrayList<>(atual);
+        copia.add(new Insumo(null, nomeLimpo));
+        insumosFormulario.setValue(copia);
         return 0;
     }
 
     /** Remove o insumo da posição informada (botão lixeira do item_insumo_edit). */
     public void removerInsumo(int posicao) {
-        // TODO [C1] Copiar a lista atual, remove(posicao) e insumosFormulario.setValue(copia).
+        List<Insumo> atual = insumosFormulario.getValue();
+        if (atual == null || posicao < 0 || posicao >= atual.size()) return;
+
+        List<Insumo> copia = new ArrayList<>(atual);
+        copia.remove(posicao);
+        insumosFormulario.setValue(copia);
     }
 
     /**
@@ -124,17 +175,29 @@ public class PostoViewModel extends ViewModel {
      * Na Activity: se a lista estiver vazia, mostrar txtErroInsumos e não chamar este método.
      */
     public void salvar(String nomePosto) {
-        // TODO [C1] Posto posto = new Posto(nomePosto, insumosFormulario.getValue());
-        //  posto.setId(postoIdEmEdicao);
-        //  carregando = true; repositorio.salvar(posto, callback):
-        //   - onSucesso -> carregando = false; salvo.setValue(true)  (Activity mostra msg e finish())
-        //   - onErro    -> carregando = false; mensagemErro = ErrosFirebase.traduzir(e)
-        //     (se um operador tentar, o Firestore recusa: PERMISSION_DENIED)
+        Posto posto = new Posto(nomePosto, insumosFormulario.getValue());
+        posto.setId(postoIdEmEdicao);
+
+        carregando.setValue(true);
+        repositorio.salvar(posto, new RepositorioCallback<Void>() {
+            @Override
+            public void onSucesso(Void resultado) {
+                carregando.setValue(false);
+                salvo.setValue(true);
+            }
+
+            @Override
+            public void onErro(Exception e) {
+                carregando.setValue(false);
+                mensagemErro.setValue(ErrosFirebase.traduzir(e));
+            }
+        });
     }
 
     /** Item "Sair" do menu (NC1). */
     public void sair() {
-        // TODO [NC1] pararDeOuvirPostos(); authRepositorio.logout();
+        pararDeOuvirPostos();
+        authRepositorio.logout();
     }
 
     @Override

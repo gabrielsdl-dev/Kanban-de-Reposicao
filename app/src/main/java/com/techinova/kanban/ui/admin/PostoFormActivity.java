@@ -1,17 +1,27 @@
 package com.techinova.kanban.ui.admin;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.snackbar.Snackbar;
 import com.techinova.kanban.R;
 import com.techinova.kanban.databinding.ActivityPostoFormBinding;
+import com.techinova.kanban.model.Insumo;
+import com.techinova.kanban.ui.auth.LoginActivity;
 import com.techinova.kanban.util.Constantes;
 import com.techinova.kanban.util.InsetsUtil;
+import com.techinova.kanban.util.Validacao;
+
+import java.util.List;
 
 /**
  * C1 / NC6 / NC7: cadastro/edição de posto com seus insumos.
@@ -40,15 +50,13 @@ public class PostoFormActivity extends AppCompatActivity {
 
         viewModel = new ViewModelProvider(this).get(PostoViewModel.class);
 
-        adapter = new InsumosEditAdapter((posicao, insumo) -> {
-            // TODO [C1] viewModel.removerInsumo(posicao);
-        });
+        adapter = new InsumosEditAdapter((posicao, insumo) -> viewModel.removerInsumo(posicao));
         binding.rvInsumos.setAdapter(adapter);
 
         String postoId = getIntent().getStringExtra(Constantes.EXTRA_POSTO_ID);
         if (postoId != null) {
             binding.toolbar.setTitle(R.string.posto_form_titulo_editar);
-            // TODO [C1] viewModel.carregarPosto(postoId);  (o ViewModel só busca uma vez)
+            viewModel.carregarPosto(postoId);
         }
 
         configurarCliques();
@@ -57,30 +65,62 @@ public class PostoFormActivity extends AppCompatActivity {
 
     private void configurarCliques() {
         binding.btnAdicionarInsumo.setOnClickListener(v -> {
-            // TODO [C1/NC6] int erro = viewModel.adicionarInsumo(Validacao.texto(binding.tilNomeInsumo));
-            //  if (erro != 0) { binding.tilNomeInsumo.setError(getString(erro)); return; }
-            //  binding.tilNomeInsumo.setError(null); binding.edtNomeInsumo.setText("");
-            //  binding.txtErroInsumos.setVisibility(View.GONE);
+            int erro = viewModel.adicionarInsumo(Validacao.texto(binding.tilNomeInsumo));
+            if (erro != 0) {
+                binding.tilNomeInsumo.setError(getString(erro));
+                return;
+            }
+            binding.tilNomeInsumo.setError(null);
+            binding.edtNomeInsumo.setText("");
+            binding.txtErroInsumos.setVisibility(View.GONE);
         });
 
         binding.btnSalvar.setOnClickListener(v -> {
-            // TODO [NC6] boolean ok = Validacao.obrigatorio(binding.tilNomePosto, R.string.erro_nome_posto);
-            //  (critério de aceite: nome vazio -> "Informe o nome do posto" e nada é gravado)
-            //  Lista de insumos vazia -> binding.txtErroInsumos.setVisibility(View.VISIBLE); ok = false;
-            //  if (!ok) return;
-            // TODO [C1] viewModel.salvar(Validacao.texto(binding.tilNomePosto));
+            boolean ok = Validacao.obrigatorio(binding.tilNomePosto, R.string.erro_nome_posto);
+
+            List<Insumo> insumos = viewModel.getInsumosFormulario().getValue();
+            if (insumos == null || insumos.isEmpty()) {
+                binding.txtErroInsumos.setVisibility(View.VISIBLE);
+                ok = false;
+            } else {
+                binding.txtErroInsumos.setVisibility(View.GONE);
+            }
+
+            if (!ok) return;
+
+            viewModel.salvar(Validacao.texto(binding.tilNomePosto));
         });
     }
 
     private void observarViewModel() {
-        // TODO [C1/NC7] viewModel.getInsumosFormulario().observe(this, lista -> {
-        //      adapter.submeterLista(lista);
-        //      binding.txtSemInsumos.setVisibility(lista.isEmpty() ? View.VISIBLE : View.GONE); });
-        // TODO [C1] viewModel.getNomeCarregado().observe(...): preencher binding.edtNomePosto SÓ se o
-        //  campo estiver vazio (senão a rotação apagaria o que o usuário já alterou).
-        // TODO [C1] getCarregando() -> progresso e btnSalvar.setEnabled(!carregando).
-        // TODO [C1] getSalvo() == true -> Toast R.string.msg_posto_salvo e finish().
-        // TODO [NC6] getMensagemErro() -> Snackbar + limparMensagem().
+        viewModel.getInsumosFormulario().observe(this, lista -> {
+            adapter.submeterLista(lista);
+            binding.txtSemInsumos.setVisibility(lista == null || lista.isEmpty() ? View.VISIBLE : View.GONE);
+        });
+
+        viewModel.getNomeCarregado().observe(this, nome -> {
+            if (nome != null && Validacao.texto(binding.tilNomePosto).isEmpty()) {
+                binding.edtNomePosto.setText(nome);
+            }
+        });
+
+        viewModel.getCarregando().observe(this, c -> {
+            boolean carregando = Boolean.TRUE.equals(c);
+            binding.progresso.setVisibility(carregando ? View.VISIBLE : View.GONE);
+            binding.btnSalvar.setEnabled(!carregando);
+        });
+
+        viewModel.getSalvo().observe(this, salvo -> {
+            if (!Boolean.TRUE.equals(salvo)) return;
+            Toast.makeText(this, R.string.msg_posto_salvo, Toast.LENGTH_SHORT).show();
+            finish();
+        });
+
+        viewModel.getMensagemErro().observe(this, res -> {
+            if (res == null) return;
+            Snackbar.make(binding.getRoot(), res, Snackbar.LENGTH_LONG).show();
+            viewModel.limparMensagem();
+        });
     }
 
     @Override
@@ -96,7 +136,18 @@ public class PostoFormActivity extends AppCompatActivity {
             return true;
         }
         if (item.getItemId() == R.id.acaoSair) {
-            // TODO [NC1] Mesmo fluxo de sair da PostosActivity (diálogo -> viewModel.sair() -> Login).
+            new MaterialAlertDialogBuilder(this)
+                    .setTitle(R.string.dialogo_sair_titulo)
+                    .setMessage(R.string.dialogo_sair_mensagem)
+                    .setNegativeButton(R.string.cancelar, null)
+                    .setPositiveButton(R.string.sim, (dialog, which) -> {
+                        viewModel.sair();
+                        Intent intent = new Intent(this, LoginActivity.class);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        startActivity(intent);
+                        finish();
+                    })
+                    .show();
             return true;
         }
         return super.onOptionsItemSelected(item);

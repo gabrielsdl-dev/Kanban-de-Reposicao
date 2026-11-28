@@ -1,15 +1,21 @@
 package com.techinova.kanban.ui.admin;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.snackbar.Snackbar;
 import com.techinova.kanban.R;
 import com.techinova.kanban.databinding.ActivityPostosBinding;
+import com.techinova.kanban.ui.auth.LoginActivity;
+import com.techinova.kanban.util.Constantes;
 import com.techinova.kanban.util.InsetsUtil;
 
 /**
@@ -38,41 +44,47 @@ public class PostosActivity extends AppCompatActivity {
 
         // RecyclerView + estado vazio (NC5)
         adapter = new PostosAdapter(posto -> {
-            // TODO [C1] Abrir PostoFormActivity para EDITAR:
-            //  Intent i = new Intent(this, PostoFormActivity.class);
-            //  i.putExtra(Constantes.EXTRA_POSTO_ID, posto.getId()); startActivity(i);
+            Intent i = new Intent(this, PostoFormActivity.class);
+            i.putExtra(Constantes.EXTRA_POSTO_ID, posto.getId());
+            startActivity(i);
         });
         binding.rvPostos.setAdapter(adapter);
         binding.estadoVazio.txtEstadoVazio.setText(R.string.postos_vazio);
         binding.estadoVazio.txtEstadoVazioDica.setText(R.string.postos_vazio_dica);
         binding.estadoVazio.imgEstadoVazio.setImageResource(R.drawable.ic_fabrica);
 
-        binding.fabNovoPosto.setOnClickListener(v -> {
-            // TODO [C1] startActivity(new Intent(this, PostoFormActivity.class));  (sem extra = novo posto)
-        });
+        binding.fabNovoPosto.setOnClickListener(v ->
+                startActivity(new Intent(this, PostoFormActivity.class))
+        );
 
         observarViewModel();
     }
 
     private void observarViewModel() {
-        // TODO [C1/NC5] viewModel.getPostos().observe(this, lista -> {
-        //      adapter.submeterLista(lista);
-        //      boolean vazio = lista == null || lista.isEmpty();
-        //      binding.estadoVazio.getRoot().setVisibility(vazio ? View.VISIBLE : View.GONE);
-        //      binding.rvPostos.setVisibility(vazio ? View.GONE : View.VISIBLE); });
-        // TODO [NC6] getMensagemErro() -> Snackbar + limparMensagem().
+        viewModel.getPostos().observe(this, lista -> {
+            adapter.submeterLista(lista);
+            boolean vazio = lista == null || lista.isEmpty();
+            binding.estadoVazio.getRoot().setVisibility(vazio ? View.VISIBLE : View.GONE);
+            binding.rvPostos.setVisibility(vazio ? View.GONE : View.VISIBLE);
+        });
+
+        viewModel.getMensagemErro().observe(this, res -> {
+            if (res == null) return;
+            Snackbar.make(binding.getRoot(), res, Snackbar.LENGTH_LONG).show();
+            viewModel.limparMensagem();
+        });
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        // TODO [NC2] viewModel.ouvirPostos();  (registra o snapshot listener)
+        viewModel.ouvirPostos();
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        // TODO [NC2] viewModel.pararDeOuvirPostos();  (ListenerRegistration.remove())
+        viewModel.pararDeOuvirPostos();
     }
 
     @Override
@@ -88,10 +100,18 @@ public class PostosActivity extends AppCompatActivity {
             return true;
         }
         if (item.getItemId() == R.id.acaoSair) {
-            // TODO [NC1] Confirmar com MaterialAlertDialogBuilder (R.string.dialogo_sair_titulo /
-            //  R.string.dialogo_sair_mensagem, botões R.string.sim / R.string.cancelar).
-            //  No "Sim": viewModel.sair(); abrir LoginActivity com
-            //  FLAG_ACTIVITY_NEW_TASK | FLAG_ACTIVITY_CLEAR_TASK e finish().
+            new MaterialAlertDialogBuilder(this)
+                    .setTitle(R.string.dialogo_sair_titulo)
+                    .setMessage(R.string.dialogo_sair_mensagem)
+                    .setNegativeButton(R.string.cancelar, null)
+                    .setPositiveButton(R.string.sim, (dialog, which) -> {
+                        viewModel.sair();
+                        Intent intent = new Intent(this, LoginActivity.class);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        startActivity(intent);
+                        finish();
+                    })
+                    .show();
             return true;
         }
         return super.onOptionsItemSelected(item);

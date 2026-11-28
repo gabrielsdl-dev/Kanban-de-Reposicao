@@ -1,8 +1,12 @@
 package com.techinova.kanban.util;
 
+import android.util.Patterns;
+import android.widget.EditText;
+
 import androidx.annotation.StringRes;
 
 import com.google.android.material.textfield.TextInputLayout;
+import com.techinova.kanban.R;
 
 /**
  * NC6: validação de formulários. Cada método valida o campo, chama setError() no
@@ -22,37 +26,70 @@ public final class Validacao {
 
     /** Texto do EditText dentro do TextInputLayout, sem espaços nas pontas (nunca null). */
     public static String texto(TextInputLayout til) {
-        // TODO [NC6] Devolver til.getEditText().getText().toString().trim().
-        //  Cuidado: getEditText() e getText() podem ser null -> devolver "" nesses casos.
-        return "";
+        if (til == null || til.getEditText() == null || til.getEditText().getText() == null) {
+            return "";
+        }
+        return til.getEditText().getText().toString().trim();
+    }
+
+    /** Método auxiliar interno para pegar o texto bruto (sem trim), usado nas senhas. */
+    private static String textoBruto(TextInputLayout til) {
+        if (til == null || til.getEditText() == null || til.getEditText().getText() == null) {
+            return "";
+        }
+        return til.getEditText().getText().toString();
     }
 
     /** Campo obrigatório genérico. */
     public static boolean obrigatorio(TextInputLayout til, @StringRes int mensagemErro) {
-        // TODO [NC6] Se texto(til).isEmpty() -> til.setError(til.getContext().getString(mensagemErro))
-        //  e devolver false. Senão -> til.setError(null) e devolver true.
+        if (texto(til).isEmpty()) {
+            til.setError(til.getContext().getString(mensagemErro));
+            return false;
+        }
+        til.setError(null);
         return true;
     }
 
     /** E-mail obrigatório e com formato válido. */
     public static boolean email(TextInputLayout til) {
-        // TODO [NC6] Vazio -> R.string.erro_email_vazio.
-        //  Formato inválido -> R.string.erro_email_invalido (use android.util.Patterns.EMAIL_ADDRESS.matcher(x).matches()).
-        //  Ok -> til.setError(null).
+        String valor = texto(til);
+        if (valor.isEmpty()) {
+            til.setError(til.getContext().getString(R.string.erro_email_vazio));
+            return false;
+        }
+        if (!Patterns.EMAIL_ADDRESS.matcher(valor).matches()) {
+            til.setError(til.getContext().getString(R.string.erro_email_invalido));
+            return false;
+        }
+        til.setError(null);
         return true;
     }
 
     /** Senha obrigatória com no mínimo Constantes.SENHA_TAMANHO_MINIMO caracteres. */
     public static boolean senha(TextInputLayout til) {
-        // TODO [NC6] Vazia -> R.string.erro_senha_vazia.
-        //  Menor que Constantes.SENHA_TAMANHO_MINIMO -> R.string.erro_senha_curta.
-        //  Atenção: para senha NÃO use trim() (espaço pode fazer parte da senha).
+        String valor = textoBruto(til);
+        if (valor.isEmpty()) {
+            til.setError(til.getContext().getString(R.string.erro_senha_vazia));
+            return false;
+        }
+        if (valor.length() < Constantes.SENHA_TAMANHO_MINIMO) {
+            til.setError(til.getContext().getString(R.string.erro_senha_curta));
+            return false;
+        }
+        til.setError(null);
         return true;
     }
 
     /** Confirmação igual à senha. */
     public static boolean senhasIguais(TextInputLayout tilSenha, TextInputLayout tilConfirmacao) {
-        // TODO [NC6] Se os textos forem diferentes -> tilConfirmacao.setError(R.string.erro_senhas_diferentes).
+        String senha = textoBruto(tilSenha);
+        String confirmacao = textoBruto(tilConfirmacao);
+
+        if (!senha.equals(confirmacao)) {
+            tilConfirmacao.setError(tilConfirmacao.getContext().getString(R.string.erro_senhas_diferentes));
+            return false;
+        }
+        tilConfirmacao.setError(null);
         return true;
     }
 
@@ -61,8 +98,13 @@ public final class Validacao {
      * Nunca deixe Integer.parseInt derrubar o app.
      */
     public static boolean inteiro(TextInputLayout til, @StringRes int mensagemErro) {
-        // TODO [NC6] try { Integer.parseInt(texto(til)); til.setError(null); return true; }
-        //  catch (NumberFormatException e) { til.setError(getString(mensagemErro)); return false; }
-        return true;
+        try {
+            Integer.parseInt(texto(til));
+            til.setError(null);
+            return true;
+        } catch (NumberFormatException e) {
+            til.setError(til.getContext().getString(mensagemErro));
+            return false;
+        }
     }
 }
